@@ -1,0 +1,8 @@
+#include <stdlib.h>
+#include <stdio.h>
+
+int main(void)
+{
+	printf ("Vasya jopa \n");
+	return 0;
+}

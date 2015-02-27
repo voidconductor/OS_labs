@@ -1,0 +1,8 @@
+void f(char *s1, char *s1) {
+    g_return_if_fail(s1);
+    char *a = g_strdup(s1);
+    g_return_if_fail(s2);
+    char *b = g_strdup(s2);
+    free(a);
+    free(b);
+}
