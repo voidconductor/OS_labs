@@ -58,7 +58,6 @@ int main( int argc, char **argv )
     }
     i += EVENT_SIZE + event->len;
   }
-
   ( void ) inotify_rm_watch( fd, wd );
   ( void ) close( fd );
 

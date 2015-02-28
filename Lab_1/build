@@ -1,2 +1,3 @@
 all:
-	gcc main.c -o hello
+	gcc main.c -o notify
+	gcc second.c -o second
