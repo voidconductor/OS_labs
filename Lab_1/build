@@ -1,3 +1,4 @@
 all:
 	gcc main.c -o notify
 	gcc second.c -o second
+	gcc proper.c -o proper
