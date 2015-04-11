@@ -1,0 +1,2 @@
+all:
+	gcc terminal.c -o pew_bash
