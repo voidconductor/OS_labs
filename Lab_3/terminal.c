@@ -7,78 +7,81 @@
 #define MAX_COMMAND_LENGTH 100
 #define MAX_NUMBER_OF_PARAMS 10
 
-// Разделение введённой команды на аргументы
-void parseCmd(char* cmd, char** params)
+/* Разделение введённой команды на аргументы */
+void parseCmd(char *cmd, char **params)
 {
 int i;
-for(i = 0; i < MAX_NUMBER_OF_PARAMS; i++)
+for (i = 0; i < MAX_NUMBER_OF_PARAMS; i++)
 {
     params[i] = strsep(&cmd, " ");
-    if(params[i] == NULL) break;
+    if (params[i] == NULL) break;
 }
 }
 
 
-int executeCmd(char** params)
+int executeCmd(char **params)
 {
-// Fork
+/* Fork */
 pid_t pid = fork();
 
 if (pid == -1)
 {
-    char* error = strerror(errno);
+    char *error = strerror(errno);
+
     printf("fork: %s\n", error);
     return 1;
 }
 
-// Child
+/* Child */
 else if (pid == 0)
 {
-    // Execute
+    /* Execute */
     execvp(params[0], params);
 
-    // Error
-    char* error = strerror(errno);
+    /* Error */
+    char *error = strerror(errno);
+
     printf("shell: %s: %s\n", params[0], error);
     return 0;
 }
 
-// Parent
+/* Parent */
 else
 {
-    // Wait for child
+    /* Wait for child */
     int childStatus;
+
     waitpid(pid, &childStatus, 0);
     return 1;
 }
 }
 
-int main()
+int main(void)
 {
 char cmd[MAX_COMMAND_LENGTH + 1];
-char* params[MAX_NUMBER_OF_PARAMS + 1];
+char *params[MAX_NUMBER_OF_PARAMS + 1];
 
-while(1)
+while (1)
 {
-    // Приглашение.
+    /* Приглашение. */
     printf("pew-pew>");
 
-    // Считаем команду.
-    if(fgets(cmd, sizeof(cmd), stdin) == NULL) break;
+    /* Считаем команду. */
+    if (fgets(cmd, sizeof(cmd), stdin) == NULL) break;
 
-    // Удаляем символы перхода если есть.
-    if(cmd[strlen(cmd)-1] == '\n')
+    /* Удаляем символы перхода если есть. */
+    if (cmd[strlen(cmd)-1] == '\n')
     {
-        cmd[strlen(cmd)-1] = '\0';
+	cmd[strlen(cmd)-1] = '\0';
     }
-    // Разбивка ввдённой команды.
+    /* Разбивка ввдённой команды. */
     parseCmd(cmd, params);
 
-    // Если выход, то выход.
-    if(strcmp(params[0], "exit") == 0) break;
+    /* Если выход, то выход. */
+    if (strcmp(params[0], "exit") == 0) break;
 
-    // Выполнение!
-    if(executeCmd(params) == 0) break;
+    /* Выполнение! */
+    if (executeCmd(params) == 0) break;
 }
 return 0;
 }
