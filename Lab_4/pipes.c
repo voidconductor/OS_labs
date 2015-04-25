@@ -14,11 +14,14 @@ int file_pipes_data [2];
 int file_pipes_gamma [2];
 pid_t pid_data, pid_gamma;
 int file;
-int i;
+int i = 0;
 
-char buf[8] = {0};
-char buf2[8] = {0};
+int ifread;
 
+off_t file_siz;
+
+char *buf;
+char buf2[256] = {0};
 
 if (pipe(file_pipes_data)==0)
 {
@@ -35,10 +38,17 @@ if (pipe(file_pipes_data)==0)
         close(file_pipes_data[1]);
         close(file_pipes_data[0]);
 
-        if((file=open("data.txt",O_RDONLY)) == -1)
+        if((file=open(argv[1],O_RDONLY)) == -1)
 			printf("Can't open file data.txt\n");
-        read(file,buf, sizeof(buf));
-        printf("%s",buf);
+
+        file_siz=lseek(file,0,SEEK_END);
+        lseek(file,0,SEEK_SET);
+
+        while (file_siz > 0)
+        {
+            file_siz-=read(file,buf, 1);
+            write(1,buf,1);
+        }
     }
     else if(pipe(file_pipes_gamma)==0)
     {
@@ -58,28 +68,28 @@ if (pipe(file_pipes_data)==0)
             if((file=open("gamma.txt",O_RDONLY)) == -1)
                 printf("Can't open file gamma.txt\n");
             read(file,buf2, sizeof(buf2));
-            printf("%s",buf2);
+            write(1,buf2,sizeof(buf2));
         }
         else
         {
             close(file_pipes_data[1]);
             close(file_pipes_gamma[1]);
-            if ((file = open("output.txt",O_CREAT | O_WRONLY,S_IWUSR|S_IRUSR)) == -1)
+            if ((file = open("output",O_CREAT | O_WRONLY,S_IWUSR|S_IRUSR)) == -1)
                 printf("Can't open file output.txt\n");
-            read(file_pipes_data[0], buf, sizeof(buf));
             read(file_pipes_gamma[0], buf2, sizeof(buf2));
-            printf("%s \n", buf);
 
-            for(i = 0; i < 8; i++)
+            while (ifread != 0)
             {
-                buf[i] = buf[i]^buf2[i];
+                ifread = read(file_pipes_data[0], buf, 1);
+                buf[0] = buf[0]^buf2[i];
+                i++;
+
+                if(i == 256)
+                    i = 0;
+                write(file,buf,1);
             }
-            printf("%s \n", buf);
-            write(file,buf,sizeof(buf));
         }
     }
-
 }
-close(file);
 return 0;
 }
