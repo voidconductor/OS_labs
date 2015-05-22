@@ -1,0 +1,2 @@
+all:
+	gcc -D_REENTRANT threads.c -o threads -lpthread -lm
